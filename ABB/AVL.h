@@ -19,7 +19,7 @@ struct nodo* nuevoNodo(int clave) {
     struct nodo* nodo = new struct nodo;
     nodo->clave = clave;
     nodo->izquierda = nodo->derecha = nullptr;
-    nodo->altura = 1; // nuevo nodo se añade al final del árbol
+    nodo->altura = 1; // nuevo nodo se aÃ±ade al final del Ã¡rbol
     return nodo;
 }
 
@@ -31,7 +31,7 @@ struct nodo* rotacionDerecha(struct nodo *y) {
     struct nodo *x = y->izquierda;
     struct nodo *T2 = x->derecha;
 
-    // Realizar rotación
+    // Realizar rotaciÃ³n
     x->derecha = y;
     y->izquierda = T2;
 
@@ -39,7 +39,7 @@ struct nodo* rotacionDerecha(struct nodo *y) {
     y->altura = max(altura(y->izquierda), altura(y->derecha)) + 1;
     x->altura = max(altura(x->izquierda), altura(x->derecha)) + 1;
 
-    // Devolver nueva raíz
+    // Devolver nueva raÃ­z
     return x;
 }
 
@@ -47,7 +47,7 @@ struct nodo* rotacionIzquierda(struct nodo *x) {
     struct nodo *y = x->derecha;
     struct nodo *T2 = y->izquierda;
 
-    // Realizar rotación
+    // Realizar rotaciÃ³n
     y->izquierda = x;
     x->derecha = T2;
 
@@ -55,7 +55,7 @@ struct nodo* rotacionIzquierda(struct nodo *x) {
     x->altura = max(altura(x->izquierda), altura(x->derecha)) + 1;
     y->altura = max(altura(y->izquierda), altura(y->derecha)) + 1;
 
-    // Devolver nueva raíz
+    // Devolver nueva raÃ­z
     return y;
 }
 
@@ -67,7 +67,7 @@ int obtenerBalance(struct nodo *N) {
 }
 
 struct nodo* insertar(struct nodo* nodo, int clave) {
-    // 1. Realizar la inserción normal en el BST
+    // 1. Realizar la inserciÃ³n normal en el BST
     if (nodo == nullptr)
         return nuevoNodo(clave);
 
@@ -81,10 +81,10 @@ struct nodo* insertar(struct nodo* nodo, int clave) {
     // 2. Actualizar la altura del nodo ancestro
     nodo->altura = 1 + max(altura(nodo->izquierda), altura(nodo->derecha));
 
-    // 3. Obtener el factor de balanceo de este nodo ancestro para verificar si se desbalanceó
+    // 3. Obtener el factor de balanceo de este nodo ancestro para verificar si se desbalanceÃ³
     int balance = obtenerBalance(nodo);
 
-    // Si el nodo se desbalanceó, entonces hay 4 casos
+    // Si el nodo se desbalanceÃ³, entonces hay 4 casos
 
     // Caso izquierda-izquierda
     if (balance > 1 && clave < nodo->izquierda->clave)
@@ -111,7 +111,7 @@ struct nodo* insertar(struct nodo* nodo, int clave) {
 }
 
 struct nodo* buscar(struct nodo* raiz, int clave) {
-    // Casos base: raiz es null o la clave está presente en la raiz
+    // Casos base: raiz es null o la clave estÃ¡ presente en la raiz
     if (raiz == nullptr || raiz->clave == clave)
         return raiz;
 
