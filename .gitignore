@@ -1,7 +1,7 @@
 **/*.exe
 **/*.o
 **/.vs/
-**/.h.gch
+**/.h.gh
 **./build/
 **./bin/
 **./obj/
