@@ -13,11 +13,11 @@ void imprimirArbol(struct nodo* raiz, std::string prefijo = "", bool esIzquierdo
     if (raiz == nullptr) {
         return;
     }
-    
+
     std::cout << prefijo;
-    std::cout << (esIzquierdo ? );
+    std::cout << (esIzquierdo ? "├──" : "└──");
     std::cout << raiz->clave << std::endl;
-    
+
     imprimirArbol(raiz->derecha, prefijo + (esIzquierdo ? "¦   " : "    "), false);
     imprimirArbol(raiz->izquierda, prefijo + (esIzquierdo ? "¦   " : "    "), true);
 }
@@ -74,7 +74,7 @@ int obtenerBalance(struct nodo *N) {
 }
 
 struct nodo* insertar(struct nodo* nodo, int clave) {
-    // 1. Realizar la inserción normal 
+    // 1. Realizar la inserción normal
     if (nodo == nullptr)
         return nuevoNodo(clave);
     if (clave < nodo->clave)
@@ -187,6 +187,30 @@ struct nodo* eliminar(struct nodo* raiz, int clave) {
         return rotacionIzquierda(raiz);
     }
     return raiz;
+}
+
+void preOrden(struct nodo* raiz) {
+    if (raiz != nullptr) {
+        std::cout << raiz->clave << " ";
+        preOrden(raiz->izquierda);
+        preOrden(raiz->derecha);
+    }
+}
+
+void inOrden(struct nodo* raiz) {
+    if (raiz != nullptr) {
+        inOrden(raiz->izquierda);
+        std::cout << raiz->clave << " ";
+        inOrden(raiz->derecha);
+    }
+}
+
+void postOrden(struct nodo* raiz) {
+    if (raiz != nullptr) {
+        postOrden(raiz->izquierda);
+        postOrden(raiz->derecha);
+        std::cout << raiz->clave << " ";
+    }
 }
 
 #endif

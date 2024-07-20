@@ -10,11 +10,11 @@ void mostrarMenu();
 int main()
 {
 	SetConsoleOutputCP(CP_UTF8);
-	
+
     int opcion;
     struct nodo* raiz = nullptr;
     int valor;
-   
+
     do {
         mostrarMenu();
         cin >> opcion;
@@ -24,13 +24,31 @@ int main()
                 cin >> valor;
                 raiz = insertar(raiz, valor);
                 cout << "Valor insertado correctamente." << endl;
+                imprimirArbol(raiz);
                 break;
             case 2:
                 if (raiz == nullptr) {
                     cout << "El árbol está vacío." << endl;
                 } else {
-                    cout << "Árbol AVL:" << endl;
-                    imprimirArbol(raiz);
+                    int tipoRecorrido;
+                    cout << "Seleccione el tipo de recorrido:\n1. PreOrden\n2. InOrden\n3. PostOrden\n";
+                    cin >> tipoRecorrido;
+                    cout << "Recorrido seleccionado:" << endl;
+                    switch (tipoRecorrido) {
+                        case 1:
+                            preOrden(raiz);
+                            break;
+                        case 2:
+                            inOrden(raiz);
+                            break;
+                        case 3:
+                            postOrden(raiz);
+                            break;
+                        default:
+                            cout << "Tipo de recorrido inválido." << endl;
+                            break;
+                    }
+                    cout << endl;
                 }
                 break;
             case 3:
@@ -65,13 +83,13 @@ int main()
         }
         cout << endl;
     } while(opcion != 6);
-    
+
     return 0;
 }
 
 void mostrarMenu() {
     cout << "\n/////ARBOLES MULTICAMINO/////" << endl;
-    cout << "1. Creacion / Insercion" << endl;
+    cout << "1. Insercion" << endl;
     cout << "2. Recorridos sistematicos" << endl;
     cout << "3. Busqueda" << endl;
     cout << "4. Eliminacion" << endl;
