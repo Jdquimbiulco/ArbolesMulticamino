@@ -2,11 +2,16 @@
 #define AVL_H
 #include <iostream>
 #include <string>
+#include "Lista.h"
 
 struct nodo {
     int clave;
     struct nodo *izquierda, *derecha;
     int altura;
+    
+    
+    nodo() : clave(0), izquierda(nullptr), derecha(nullptr) {}
+    nodo(int valor) : clave(valor), izquierda(nullptr), derecha(nullptr) {}
 };
 
 void imprimirArbol(struct nodo* raiz, std::string prefijo = "", bool esIzquierdo = true) {
@@ -15,11 +20,11 @@ void imprimirArbol(struct nodo* raiz, std::string prefijo = "", bool esIzquierdo
     }
 
     std::cout << prefijo;
-    std::cout << (esIzquierdo ? "├──" : "└──");
+    std::cout << (esIzquierdo ? "├── " : "└── ");
     std::cout << raiz->clave << std::endl;
 
-    imprimirArbol(raiz->derecha, prefijo + (esIzquierdo ? "¦   " : "    "), false);
-    imprimirArbol(raiz->izquierda, prefijo + (esIzquierdo ? "¦   " : "    "), true);
+    imprimirArbol(raiz->derecha, prefijo + (esIzquierdo ? "│   " : "    "), false);
+    imprimirArbol(raiz->izquierda, prefijo + (esIzquierdo ? "│   " : "    "), true);
 }
 
 int altura(struct nodo *N) {
@@ -119,73 +124,60 @@ struct nodo* buscar(struct nodo* raiz, int clave) {
     return buscar(raiz->izquierda, clave);
 }
 
-struct nodo* nodoConValorMinimo(struct nodo* nodo) {
+struct nodo* nodoConValorMaximo(struct nodo* nodo) {
     struct nodo* actual = nodo;
-    while (actual->izquierda != nullptr)
-        actual = actual->izquierda;
+    while (actual->derecha != nullptr)
+        actual = actual->derecha;
     return actual;
 }
 
 struct nodo* eliminar(struct nodo* raiz, int clave) {
-    // PASO 1: REALIZAR LA ELIMINACIÓN ESTÁNDAR DE UN ABB
     if (raiz == nullptr)
         return raiz;
-    // Si la clave a eliminar es menor que la clave de la raíz,
-    // entonces está en el subárbol izquierdo
+
     if (clave < raiz->clave)
         raiz->izquierda = eliminar(raiz->izquierda, clave);
-    // Si la clave a eliminar es mayor que la clave de la raíz,
-    // entonces está en el subárbol derecho
     else if (clave > raiz->clave)
         raiz->derecha = eliminar(raiz->derecha, clave);
-    // si la clave es la misma que la clave de la raíz, entonces
-    // este es el nodo a ser eliminado
     else {
-        // nodo con solo un hijo o sin hijos
         if ((raiz->izquierda == nullptr) || (raiz->derecha == nullptr)) {
             struct nodo *temp = raiz->izquierda ? raiz->izquierda : raiz->derecha;
-            // Sin hijos
             if (temp == nullptr) {
                 temp = raiz;
                 raiz = nullptr;
-            }
-            else // Un hijo
-                *raiz = *temp; // Copiar el contenido del hijo no vacío
+            } else
+                *raiz = *temp;
             delete temp;
-        }
-        else {
-            // nodo con dos hijos: Obtener el sucesor inorden (el menor en el subárbol derecho)
-            struct nodo* temp = nodoConValorMinimo(raiz->derecha);
-            // Copiar la clave del sucesor inorden a este nodo
+        } else {
+            struct nodo* temp = nodoConValorMaximo(raiz->izquierda);
             raiz->clave = temp->clave;
-            // Eliminar el sucesor inorden
-            raiz->derecha = eliminar(raiz->derecha, temp->clave);
+            raiz->izquierda = eliminar(raiz->izquierda, temp->clave);
         }
     }
-    // Si el árbol tenía solo un nodo, entonces retornar
+
     if (raiz == nullptr)
         return raiz;
-    // PASO 2: ACTUALIZAR LA ALTURA DEL NODO ACTUAL
+
     raiz->altura = 1 + max(altura(raiz->izquierda), altura(raiz->derecha));
-    // PASO 3: OBTENER EL FACTOR DE BALANCE DE ESTE NODO (para comprobar si este nodo se desequilibró)
     int balance = obtenerBalance(raiz);
-    // Si este nodo se desequilibra, entonces hay 4 casos
-    // Caso Izquierda Izquierda
-    if (balance > 1 && obtenerBalance(raiz->izquierda) >= 0)
-        return rotacionDerecha(raiz);
-    // Caso Izquierda Derecha
-    if (balance > 1 && obtenerBalance(raiz->izquierda) < 0) {
-        raiz->izquierda = rotacionIzquierda(raiz->izquierda);
-        return rotacionDerecha(raiz);
+
+    if (balance > 1) {
+        if (obtenerBalance(raiz->izquierda) >= 0)
+            return rotacionDerecha(raiz);
+        else {
+            raiz->izquierda = rotacionIzquierda(raiz->izquierda);
+            return rotacionDerecha(raiz);
+        }
     }
-    // Caso Derecha Derecha
-    if (balance < -1 && obtenerBalance(raiz->derecha) <= 0)
-        return rotacionIzquierda(raiz);
-    // Caso Derecha Izquierda
-    if (balance < -1 && obtenerBalance(raiz->derecha) > 0) {
-        raiz->derecha = rotacionDerecha(raiz->derecha);
-        return rotacionIzquierda(raiz);
+    if (balance < -1) {
+        if (obtenerBalance(raiz->derecha) <= 0)
+            return rotacionIzquierda(raiz);
+        else {
+            raiz->derecha = rotacionDerecha(raiz->derecha);
+            return rotacionIzquierda(raiz);
+        }
     }
+
     return raiz;
 }
 
@@ -212,5 +204,77 @@ void postOrden(struct nodo* raiz) {
         std::cout << raiz->clave << " ";
     }
 }
+
+
+struct ResultadoBusqueda {
+    bool encontrado;
+    int nivel;
+    std::string posicion;
+};
+
+ResultadoBusqueda dfs(struct nodo* raiz, int valorBuscado) {
+    if (raiz == nullptr) return {false, -1, ""};
+    
+    struct NodoInfo {
+        nodo* nodo;
+        int nivel;
+        std::string posicion;
+    };
+    
+    Lista<NodoInfo> pila;
+    pila.insertarAlFinal({raiz, 1, "raiz"});
+    
+    while (!pila.esVacia()) {
+        NodoInfo actual = pila.getCabeza()->dato;
+        pila.eliminarCabeza();
+        
+        if (actual.nodo->clave == valorBuscado) {
+            return {true, actual.nivel, actual.posicion};
+        }
+        
+        if (actual.nodo->derecha != nullptr) {
+            pila.insertarAlFinal({actual.nodo->derecha, actual.nivel + 1, actual.posicion + " -> derecha"});
+        }
+        if (actual.nodo->izquierda != nullptr) {
+            pila.insertarAlFinal({actual.nodo->izquierda, actual.nivel + 1, actual.posicion + " -> izquierda"});
+        }
+    }
+    
+    return {false, -1, ""};
+}
+
+ResultadoBusqueda bfs(struct nodo* raiz, int valorBuscado) {
+    if (raiz == nullptr) return {false, -1, ""};
+    
+    struct NodoInfo {
+        nodo* nodo;
+        int nivel;
+        std::string posicion;
+    };
+    
+    Lista<NodoInfo> cola;
+    cola.insertarAlFinal({raiz, 1, "raiz"});
+    
+    while (!cola.esVacia()) {
+        NodoInfo actual = cola.getCabeza()->dato;
+        cola.eliminarCabeza();
+        
+        if (actual.nodo->clave == valorBuscado) {
+            return {true, actual.nivel, actual.posicion};
+        }
+        
+        if (actual.nodo->izquierda != nullptr) {
+            cola.insertarAlFinal({actual.nodo->izquierda, actual.nivel + 1, actual.posicion + " -> izquierda"});
+        }
+        if (actual.nodo->derecha != nullptr) {
+            cola.insertarAlFinal({actual.nodo->derecha, actual.nivel + 1, actual.posicion + " -> derecha"});
+        }
+    }
+    
+    return {false, -1, ""};
+}
+
+
+
 
 #endif
