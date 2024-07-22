@@ -1,0 +1,17 @@
+# depslib dependency file v1.0
+1721617600 source:c:\users\juand\downloads\arboles\arbolesmulticamino\main.cpp
+	<iostream>
+	<windows.h>
+	<conio.h>
+	<string>
+	<sstream>
+	"AVL.h"
+
+1721617064 c:\users\juand\downloads\arboles\arbolesmulticamino\avl.h
+	<iostream>
+	<string>
+	"Lista.h"
+
+1721617064 c:\users\juand\downloads\arboles\arbolesmulticamino\lista.h
+	<iostream>
+
